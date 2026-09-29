@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -104,11 +105,17 @@ body::before {
 @keyframes estrellas {
 
     from {
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
+
     }
 
     to {
-        transform: translateY(80px);
+
+        transform:
+            translateY(80px);
+
     }
 
 }
@@ -237,6 +244,7 @@ body::before {
         rgba(70, 90, 255, .25);
 
     animation:
+
         flotar 4s ease-in-out infinite;
 
 }
@@ -496,77 +504,6 @@ button:hover {
 
 
 /* =========================================
-   BOTÓN GOOGLE SITES
-========================================= */
-
-.explorar {
-
-    display: inline-block;
-
-    margin-top: 22px;
-
-    padding: 16px 32px;
-
-    border-radius: 35px;
-
-    text-decoration: none;
-
-    color: white;
-
-    font-size: 17px;
-
-    font-weight: bold;
-
-    letter-spacing: .5px;
-
-    background:
-
-        linear-gradient(
-            90deg,
-            #6845ff,
-            #a944ff,
-            #4b8dff
-        );
-
-    border:
-
-        1px solid
-        rgba(190, 170, 255, .8);
-
-    box-shadow:
-
-        0 0 15px
-        rgba(115, 80, 255, .7),
-
-        0 0 35px
-        rgba(70, 120, 255, .3);
-
-    transition:
-        .3s ease;
-
-}
-
-
-.explorar:hover {
-
-    transform:
-        scale(1.08);
-
-    filter:
-        brightness(1.25);
-
-    box-shadow:
-
-        0 0 25px
-        rgba(150, 110, 255, .9),
-
-        0 0 50px
-        rgba(80, 140, 255, .5);
-
-}
-
-
-/* =========================================
    RESPONSIVE
 ========================================= */
 
@@ -605,17 +542,6 @@ button:hover {
     .mensaje {
 
         font-size: 17px;
-
-    }
-
-
-    .explorar {
-
-        width: 90%;
-
-        padding: 15px 20px;
-
-        font-size: 16px;
 
     }
 
@@ -772,28 +698,13 @@ button:hover {
 
             ¿Existe algún número que pueda resolver esta ecuación?
 
-           <br><br>
+            <br><br>
 
-            ✨<strong>
-                Hacé clic en el siguiente enlace y  🔍 explorá y descubrí qué necesitamos para hacer posible lo imposible
+            🔍 <strong>
+                Explorá y descubrí qué necesitamos para hacer posible lo imposible.
             </strong>
 
         </p>
-
-
-        <!-- =================================
-             BOTÓN GOOGLE SITES
-        ================================= -->
-
-        <a
-            href="https://sites.google.com/view/numeros-complejos-udi"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="explorar">
-
-            🚀 EXPLORAR EL UNIVERSO COMPLEJO
-
-        </a>
 
 
     </div>
@@ -812,39 +723,37 @@ button:hover {
 
 const texto = `
 
-¡Bienvenidos a este nuevo mundo matemático! 🌌
+¡Bienvenidos a este nuevo mundo matemático!
 
 ¿Alguna vez te preguntaste por qué existen los Números complejos? 🤔
 
 En este recorrido vas a descubrir por qué fue necesario crear estos números, cómo se construyen, cómo se representan y qué misterios esconden.
 
-Vas a poder explorar, experimentar, tomar decisiones y superar distintos desafíos.
-
-Cada desafío te dará nuevas herramientas para avanzar y... poco a poco, construir tu propio conocimiento.
-
-Descubramos juntos hasta dónde pueden llevarnos estos números. ✨
+Vas a poder explorar, experimentar, tomar decisiones y superar distintos desafíos. Cada desafío te dará nuevas herramientas para avanzar y... poco a poco, construir tu propio conocimiento.
+Descubramos juntos hasta dónde pueden llevarnos estos números.
 
 `;
 
 
 /* =========================================
-   MOSTRAR TEXTO DE LYRA
+   ESCRITURA DEL TEXTO
 ========================================= */
 
 const mensaje =
     document.getElementById("mensaje");
 
-let i = 0;
+
+let posicion = 0;
 
 
 function escribirTexto() {
 
-    if (i < texto.length) {
+    if (posicion < texto.length) {
 
         mensaje.innerHTML +=
-            texto.charAt(i);
+            texto.charAt(posicion);
 
-        i++;
+        posicion++;
 
         setTimeout(
             escribirTexto,
@@ -857,6 +766,7 @@ function escribirTexto() {
 
 
 escribirTexto();
+
 
 
 /* =========================================
@@ -882,22 +792,78 @@ function comenzarAventura() {
     const mision =
         document.getElementById("mision");
 
+
     mision.style.display = "block";
 
 
-    setTimeout(function() {
+    mision.scrollIntoView({
 
-        mision.scrollIntoView({
+        behavior: "smooth"
 
-            behavior: "smooth",
+    });
 
-            block: "center"
-
-        });
-
-    }, 100);
 
 }
+
+
+/* =========================================
+   CUANDO TERMINA EL VIDEO
+========================================= */
+
+const video =
+    document.getElementById("videoLyra");
+
+
+video.addEventListener(
+    "ended",
+    function() {
+
+        document.querySelector(
+            ".comenzar"
+        ).style.animation =
+            "pulse 1s infinite";
+
+    }
+);
+
+
+/* =========================================
+   ANIMACIÓN DEL BOTÓN
+========================================= */
+
+const estilo =
+document.createElement("style");
+
+
+estilo.innerHTML = `
+
+@keyframes pulse {
+
+    0% {
+
+        transform: scale(1);
+
+    }
+
+    50% {
+
+        transform: scale(1.08);
+
+    }
+
+    100% {
+
+        transform: scale(1);
+
+    }
+
+}
+
+`;
+
+
+document.head.appendChild(estilo);
+
 
 </script>
 
@@ -905,3 +871,4 @@ function comenzarAventura() {
 </body>
 
 </html>
+```
