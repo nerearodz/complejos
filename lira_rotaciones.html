@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lyra explica las rotaciones</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: white;
+    background: linear-gradient(135deg, #100c2b, #30205e, #101b42);
+    text-align: center;
+  }
+
+  .panel {
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    padding: 24px;
+    border: 1px solid #8c72ff;
+    border-radius: 22px;
+    background: rgba(17, 12, 45, 0.88);
+    box-shadow: 0 0 25px #7955ff55;
+  }
+
+  .avatar {
+    font-size: 65px;
+    margin-bottom: 8px;
+    animation: aura 2s infinite alternate;
+  }
+
+  @keyframes aura {
+    from { filter: drop-shadow(0 0 4px #9875ff); }
+    to { filter: drop-shadow(0 0 20px #6ee7ff); }
+  }
+
+  h2 {
+    color: #c6b6ff;
+    margin: 8px 0;
+  }
+
+  p {
+    line-height: 1.6;
+  }
+
+  .mensaje {
+    margin: 20px 0;
+    padding: 16px;
+    border-radius: 14px;
+    background: #ffffff10;
+    text-align: left;
+    line-height: 1.7;
+  }
+
+  .controles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  button {
+    border: none;
+    border-radius: 12px;
+    padding: 13px 17px;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #7653dc;
+  }
+
+  button:hover {
+    background: #9479ff;
+  }
+
+  button:focus-visible {
+    outline: 3px solid #8cecff;
+    outline-offset: 3px;
+  }
+
+  .detener {
+    background: #a13c70;
+  }
+
+  .estado {
+    color: #a9eaff;
+    min-height: 24px;
+    margin-top: 18px;
+  }
+
+  label {
+    display: block;
+    margin-top: 18px;
+    font-size: 14px;
+  }
+
+  select {
+    margin-top: 8px;
+    max-width: 100%;
+    padding: 9px;
+    border-radius: 8px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+
+  <div class="avatar" aria-hidden="true">🌌</div>
+
+  <h2>Lyra · Universo Complejo</h2>
+
+  <p>Activá tu aura matemática y descubrí las rotaciones.</p>
+
+  <div class="mensaje">
+    ¡Hola, explorador! Soy Lyra y hoy vamos a descubrir
+    para qué sirven las rotaciones de los números complejos.
+
+    <br><br>
+
+    En el plano de Argand, cada número complejo se representa
+    mediante un punto. El eje horizontal representa la parte
+    real y el eje vertical, la parte imaginaria.
+
+    <br><br>
+
+    Pero ¿qué sucede si hacemos girar ese punto alrededor
+    del origen?
+
+    <br><br>
+
+    Para entenderlo, imaginá una recta de dirección que une
+    el origen con el punto que representa al número complejo.
+    Cuando el punto gira, esta recta también gira y cambia
+    su dirección.
+
+    <br><br>
+
+    Si giramos noventa grados en sentido antihorario,
+    la dirección de la recta cambia un cuarto de vuelta.
+    Si giramos ciento ochenta grados, da media vuelta;
+    con doscientos setenta grados, tres cuartos de vuelta;
+    y con trescientos sesenta grados, vuelve a su posición inicial.
+
+    <br><br>
+
+    ¿Para qué sirven estas rotaciones? Nos permiten comprender
+    cómo cambia la posición de un número complejo cuando gira,
+    por ejemplo, en movimientos circulares, transformaciones
+    geométricas y aplicaciones relacionadas con las ondas
+    y las señales.
+
+    <br><br>
+
+    ¡Prestá atención a algo muy importante! Cuando rotamos
+    un número complejo alrededor del origen, su módulo,
+    es decir, la distancia desde el origen hasta el punto,
+    permanece constante. Lo que cambia es su dirección y,
+    por lo tanto, sus coordenadas.
+
+    <br><br>
+
+    Ahora te toca a vos: elegí un número complejo, presioná
+    los botones de rotación y observá cómo gira la recta
+    de dirección. ¡Explorá, compará y descubrí las
+    transformaciones de los números complejos!
+  </div>
+
+  <div class="controles">
+    <button onclick="escuchar()">▶ Escuchar a Lyra</button>
+    <button onclick="pausar()">⏸ Pausar / continuar</button>
+    <button class="detener" onclick="detener()">■ Detener</button>
+  </div>
+
+  <label for="voz">Voz de Lyra:</label>
+  <select id="voz">
+    <option value="">Español disponible</option>
+  </select>
+
+  <p class="estado" id="estado" aria-live="polite">
+    Lyra está esperando tu señal.
+  </p>
+
+</div>
+
+<script>
+  const textoLyra = document.querySelector(".mensaje").innerText;
+  const selectorVoz = document.getElementById("voz");
+  const estado = document.getElementById("estado");
+
+  let voces = [];
+
+  function cargarVoces() {
+    if (!("speechSynthesis" in window)) {
+      estado.textContent =
+        "Este navegador no permite reproducir voz automáticamente.";
+      return;
+    }
+
+    voces = window.speechSynthesis.getVoices();
+
+    selectorVoz.innerHTML = "";
+
+    const vocesEspanol = voces.filter(v =>
+      v.lang.toLowerCase().startsWith("es")
+    );
+
+    if (vocesEspanol.length === 0) {
+      selectorVoz.add(new Option(
+        "Voz predeterminada del dispositivo", ""
+      ));
+      return;
+    }
+
+    vocesEspanol.forEach((voz, indice) => {
+      const opcion = new Option(
+        voz.name + " (" + voz.lang + ")",
+        String(indice)
+      );
+      selectorVoz.add(opcion);
+    });
+
+    const argentina = vocesEspanol.findIndex(v =>
+      v.lang.toLowerCase() === "es-ar"
+    );
+
+    const preferida = argentina >= 0
+      ? argentina
+      : 0;
+
+    selectorVoz.value = String(preferida);
+  }
+
+  function escuchar() {
+    if (!("speechSynthesis" in window)) {
+      estado.textContent =
+        "Tu navegador no admite la función de voz.";
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const mensaje = new SpeechSynthesisUtterance(textoLyra);
+    mensaje.lang = "es-AR";
+    mensaje.rate = 0.92;
+    mensaje.pitch = 1.12;
+    mensaje.volume = 1;
+
+    const indice = selectorVoz.value;
+
+    if (indice !== "" && voces.length > 0) {
+      const vocesEspanol = voces.filter(v =>
+        v.lang.toLowerCase().startsWith("es")
+      );
+
+      const vozElegida = vocesEspanol[Number(indice)];
+
+      if (vozElegida) {
+        mensaje.voice = vozElegida;
+        mensaje.lang = vozElegida.lang;
+      }
+    }
+
+    mensaje.onstart = () => {
+      estado.textContent = "✨ Lyra está hablando...";
+    };
+
+    mensaje.onend = () => {
+      estado.textContent = "¡Misión completada, explorador!";
+    };
+
+    mensaje.onerror = () => {
+      estado.textContent =
+        "No se pudo reproducir la voz. Probá nuevamente.";
+    };
+
+    window.speechSynthesis.speak(mensaje);
+  }
+
+  function pausar() {
+    if (!("speechSynthesis" in window)) return;
+
+    if (window.speechSynthesis.speaking) {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+        estado.textContent = "Lyra continúa hablando.";
+      } else {
+        window.speechSynthesis.pause();
+        estado.textContent = "Lyra está en pausa.";
+      }
+    }
+  }
+
+  function detener() {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    estado.textContent = "Lyra detuvo la explicación.";
+  }
+
+  if ("speechSynthesis" in window) {
+    cargarVoces();
+    window.speechSynthesis.onvoiceschanged = cargarVoces;
+  } else {
+    estado.textContent =
+      "Este navegador no admite la función de voz.";
+  }
+</script>
+
+</body>
+</html>
