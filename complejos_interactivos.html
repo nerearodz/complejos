@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador de Números Complejos</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter & Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar and sleek styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <header class="bg-indigo-600 text-white shadow-md">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 p-2 rounded-xl text-2xl">⚡</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Números Complejos en el Plano de Argand</h1>
+                                   </div>
+            </div>
+            <!-- Tab Navigation -->
+            <div class="flex bg-indigo-900/40 p-1 rounded-xl">
+                <button id="tab-construct" onclick="switchTab('construct')" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all bg-white text-indigo-700 shadow-sm">
+                    📐 Construye el Complejo
+                </button>
+                <button id="tab-guess" onclick="switchTab('guess')" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all text-indigo-100 hover:text-white">
+                    🎯 ¿Cuál es el número?
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl w-full mx-auto p-4 sm:p-6 flex-grow flex flex-col justify-center">
+
+        <!-- TAB 1: CONSTRUYE EL COMPLEJO -->
+        <section id="section-construct" class="space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-lg font-bold text-slate-900 mb-1">Modo: Construye tu Número Complejo</h2>
+                <p class="text-sm text-slate-500 mb-6">Modifica la parte real y la imaginaria con los controles deslizantes o ingresa valores directamente.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <!-- Controls & Stats Column -->
+                    <div class="lg:col-span-5 space-y-5">
+                        <!-- Real Input -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="real-slider" class="text-sm font-medium text-slate-700 flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Parte Real (a):
+                                </label>
+                                <input type="number" id="real-input" value="3" min="-10" max="10" step="0.5" class="w-20 px-2 py-1 text-right font-mono text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+                            <input type="range" id="real-slider" min="-10" max="10" step="0.5" value="3" class="w-full accent-emerald-500 cursor-pointer">
+                        </div>
+
+                        <!-- Imaginary Input -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="imag-slider" class="text-sm font-medium text-slate-700 flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-indigo-500 inline-block"></span> Parte Imaginaria (b):
+                                </label>
+                                <input type="number" id="imag-input" value="4" min="-10" max="10" step="0.5" class="w-20 px-2 py-1 text-right font-mono text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+                            <input type="range" id="imag-slider" min="-10" max="10" step="0.5" value="4" class="w-full accent-indigo-500 cursor-pointer">
+                        </div>
+
+                        <!-- Calculations Card -->
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 space-y-3">
+                            <div class="text-xs font-bold text-indigo-900 uppercase tracking-wider">Representación y Propiedades</div>
+                            <div class="grid grid-cols-2 gap-3 text-sm">
+                                <div class="bg-white p-2.5 rounded-lg border border-indigo-100/60 shadow-xs">
+                                    <div class="text-xs text-slate-500">Forma Binómica (z):</div>
+                                    <div id="construct-binomial" class="font-mono font-bold text-indigo-700 text-base mt-0.5">3 + 4i</div>
+                                </div>
+                                <div class="bg-white p-2.5 rounded-lg border border-indigo-100/60 shadow-xs">
+                                    <div class="text-xs text-slate-500">Conjugado (z&#773):</div>
+                                    <div id="construct-conjugate" class="font-mono font-bold text-indigo-700 text-base mt-0.5">3 - 4i</div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-lg border border-indigo-100/60 shadow-xs flex justify-between items-center">
+                                <div>
+                                    <div class="text-xs text-slate-500">Módulo (|z| = &#8730 (a^2 + b^2)):</div>
+                                    <div id="construct-modulus" class="font-mono font-bold text-indigo-700 text-base mt-0.5">5.00</div>
+                                </div>
+                                <button onclick="resetConstruct()" class="text-xs text-indigo-600 hover:text-indigo-800 underline font-medium cursor-pointer">Reiniciar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Column -->
+                    <div class="lg:col-span-7 flex flex-col items-center">
+                        <div class="relative w-full aspect-square max-w-[440px] bg-white rounded-2xl border border-slate-200 shadow-inner overflow-hidden flex items-center justify-center p-2">
+                            <canvas id="canvas-construct" class="w-full h-full cursor-crosshair"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 text-center">💡 Tip: Puedes hacer clic o arrastrar directamente sobre el plano complejo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: ADIVINA EL NÚMERO -->
+        <section id="section-guess" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 mb-1">Modo: ¿Cuál es Número Complejo?</h2>
+                        <p class="text-sm text-slate-500">Observa el punto marcado en el plano y escribe las coordenadas correctas.</p>
+                    </div>
+                    <!-- Score Counter -->
+                    <div class="flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                        <div class="text-xs text-slate-500 font-medium">Aciertos: <span id="score-val" class="font-bold text-emerald-600 text-sm">0</span></div>
+                        <div class="h-4 w-px bg-slate-300"></div>
+                        <div class="text-xs text-slate-500 font-medium">Intentos: <span id="attempts-val" class="font-bold text-slate-700 text-sm">0</span></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <!-- Answer Form Column -->
+                    <div class="lg:col-span-5 space-y-5">
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                            <div class="text-sm font-semibold text-slate-700">Ingresa las coordenadas del punto señalado (z):</div>
+                            
+                            <!-- Real entry -->
+                            <div>
+                                <label for="guess-real" class="block text-xs font-medium text-slate-600 mb-1">Parte Real (a):</label>
+                                <input type="number" id="guess-real" step="1" placeholder="Ej. 2" class="w-full px-3 py-2 font-mono text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+
+                            <!-- Imaginary entry -->
+                            <div>
+                                <label for="guess-imag" class="block text-xs font-medium text-slate-600 mb-1">Parte Imaginaria (b) (sin la letra i):</label>
+                                <input type="number" id="guess-imag" step="1" placeholder="Ej. -3" class="w-full px-3 py-2 font-mono text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+
+                            <div class="pt-2 flex gap-3">
+                                <button onclick="checkGuess()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-xl shadow-sm transition-all cursor-pointer text-sm">
+                                    Verificar 🔍
+                                </button>
+                                <button onclick="newGuessTarget()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-4 rounded-xl transition-all cursor-pointer text-sm">
+                                    Nuevo Ejercicio 🔄
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Feedback banner -->
+                        <div id="feedback-box" class="hidden p-4 rounded-xl border text-sm font-medium transition-all"></div>
+                    </div>
+
+                    <!-- Canvas Column -->
+                    <div class="lg:col-span-7 flex flex-col items-center">
+                        <div class="relative w-full aspect-square max-w-[440px] bg-white rounded-2xl border border-slate-200 shadow-inner overflow-hidden flex items-center justify-center p-2">
+                            <canvas id="canvas-guess" class="w-full h-full"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 text-center">🎯 El punto rojo indica el número secreto que debes identificar.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-5xl mx-auto px-4 text-center text-xs text-slate-400">
+            Plataforma interactiva de Números Complejos • Diseñado para Google Sites
+        </div>
+    </footer>
+
+    <script>
+        // Global variables for Construct Mode
+        let constructReal = 3;
+        let constructImag = 4;
+
+        // Global variables for Guess Mode
+        let targetReal = 0;
+        let targetImag = 0;
+        let score = 0;
+        let attempts = 0;
+        let hasGuessedCorrectly = false;
+
+        // Common canvas config
+        const GRID_LIMIT = 10; // range from -10 to 10
+
+        // Switch tabs function
+        function switchTab(tabName) {
+            const btnConstruct = document.getElementById('tab-construct');
+            const btnGuess = document.getElementById('tab-guess');
+            const secConstruct = document.getElementById('section-construct');
+            const secGuess = document.getElementById('section-guess');
+
+            if (tabName === 'construct') {
+                btnConstruct.className = "px-4 py-2 text-sm font-semibold rounded-lg transition-all bg-white text-indigo-700 shadow-sm";
+                btnGuess.className = "px-4 py-2 text-sm font-semibold rounded-lg transition-all text-indigo-100 hover:text-white";
+                secConstruct.classList.remove('hidden');
+                secGuess.classList.add('hidden');
+                drawConstructPlane();
+            } else {
+                btnGuess.className = "px-4 py-2 text-sm font-semibold rounded-lg transition-all bg-white text-indigo-700 shadow-sm";
+                btnConstruct.className = "px-4 py-2 text-sm font-semibold rounded-lg transition-all text-indigo-100 hover:text-white";
+                secGuess.classList.remove('hidden');
+                secConstruct.classList.add('hidden');
+                if (targetReal === 0 && targetImag === 0 && attempts === 0) {
+                    newGuessTarget();
+                } else {
+                    drawGuessPlane();
+                }
+            }
+        }
+
+        // --- CONSTRUCT MODE LOGIC ---
+        function initConstructMode() {
+            const realSlider = document.getElementById('real-slider');
+            const imagSlider = document.getElementById('imag-slider');
+            const realInput = document.getElementById('real-input');
+            const imagInput = document.getElementById('imag-input');
+
+            function updateFromValues(r, i) {
+                constructReal = Math.max(-GRID_LIMIT, Math.min(GRID_LIMIT, parseFloat(r) || 0));
+                constructImag = Math.max(-GRID_LIMIT, Math.min(GRID_LIMIT, parseFloat(i) || 0));
+
+                realSlider.value = constructReal;
+                imagSlider.value = constructImag;
+                realInput.value = constructReal;
+                imagInput.value = constructImag;
+
+                updateConstructUI();
+                drawConstructPlane();
+            }
+
+            realSlider.addEventListener('input', (e) => updateFromValues(e.target.value, constructImag));
+            imagSlider.addEventListener('input', (e) => updateFromValues(constructReal, e.target.value));
+            realInput.addEventListener('change', (e) => updateFromValues(e.target.value, constructImag));
+            imagInput.addEventListener('change', (e) => updateFromValues(constructReal, e.target.value));
+
+            // Canvas interaction (Click and Drag)
+            const canvas = document.getElementById('canvas-construct');
+            let isDragging = false;
+
+            function handleCanvasPointer(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                const xPx = clientX - rect.left;
+                const yPx = clientY - rect.top;
+
+                const width = canvas.width;
+                const height = canvas.height;
+                const scaleX = width / 20; // 20 units total (-10 to 10)
+                const scaleY = height / 20;
+
+                const r = (xPx - width / 2) / scaleX;
+                const i = ((height / 2) - yPx) / scaleY;
+
+                // Snap to nearest 0.5 for precision
+                const snappedR = Math.round(r * 2) / 2;
+                const snappedI = Math.round(i * 2) / 2;
+
+                updateFromValues(snappedR, snappedI);
+            }
+
+            canvas.addEventListener('mousedown', (e) => { isDragging = true; handleCanvasPointer(e); });
+            window.addEventListener('mousemove', (e) => { if (isDragging) handleCanvasPointer(e); });
+            window.addEventListener('mouseup', () => { isDragging = false; });
+
+            canvas.addEventListener('touchstart', (e) => { isDragging = true; handleCanvasPointer(e); e.preventDefault(); });
+            window.addEventListener('touchmove', (e) => { if (isDragging) { handleCanvasPointer(e); e.preventDefault(); } }, { passive: false });
+            window.addEventListener('touchend', () => { isDragging = false; });
+
+            updateConstructUI();
+            setupCanvasSize('canvas-construct');
+            drawConstructPlane();
+        }
+
+        function updateConstructUI() {
+            // Binomial form
+            let rStr = constructReal.toString();
+            let iAbs = Math.abs(constructImag);
+            let sign = constructImag >= 0 ? ' + ' : ' - ';
+            let binom = `${rStr}${sign}${iAbs}i`;
+            document.getElementById('construct-binomial').innerText = binom;
+
+            // Conjugate form
+            let conjIVal = -constructImag;
+            let conjSign = conjIVal >= 0 ? ' + ' : ' - ';
+            let conjABs = Math.abs(conjIVal);
+            let conjStr = `${rStr}${conjSign}${conjABs}i`;
+            document.getElementById('construct-conjugate').innerText = conjStr;
+
+            // Modulus
+            let mod = Math.sqrt(constructReal * constructReal + constructImag * constructImag);
+            document.getElementById('construct-modulus').innerText = mod.toFixed(2);
+        }
+
+        function resetConstruct() {
+            const realSlider = document.getElementById('real-slider');
+            const imagSlider = document.getElementById('imag-slider');
+            const realInput = document.getElementById('real-input');
+            const imagInput = document.getElementById('imag-input');
+
+            constructReal = 3;
+            constructImag = 4;
+            realSlider.value = 3;
+            imagSlider.value = 4;
+            realInput.value = 3;
+            imagInput.value = 4;
+
+            updateConstructUI();
+            drawConstructPlane();
+        }
+
+        // --- CANVAS RENDERING UTILS ---
+        function setupCanvasSize(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+        }
+
+        function drawComplexPlane(canvasId, pointR, pointI, showVector = true, pointColor = '#6366f1') {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const originX = width / 2;
+            const originY = height / 2;
+            const scale = width / 22; // Margen de 1 unidad por lado
+
+            // Draw Grid lines
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.lineWidth = 1;
+            for (let i = -GRID_LIMIT; i <= GRID_LIMIT; i++) {
+                let x = originX + i * scale;
+                let y = originY + i * scale;
+
+                // Vertical grid
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+
+                // Horizontal grid
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // Draw Axes
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            // X Axis (Real)
+            ctx.beginPath();
+            ctx.moveTo(0, originY);
+            ctx.lineTo(width, originY);
+            ctx.stroke();
+            // Y Axis (Imaginary)
+            ctx.beginPath();
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, height);
+            ctx.stroke();
+
+            // Axis labels & Ticks
+            ctx.fillStyle = '#64748b';
+            ctx.font = '10px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            for (let i = -8; i <= 8; i += 2) {
+                if (i === 0) continue;
+                // X tick
+                let x = originX + i * scale;
+                ctx.fillText(i, x, originY + 4);
+                // Y tick
+                let y = originY - i * scale;
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(i + 'i', originX - 6, y);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+            }
+
+            // Axis names
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillStyle = '#475569';
+            ctx.fillText('Re', width - 15, originY - 18);
+            ctx.fillText('Im', originX + 16, 10);
+
+            // Coordinates mapping for point
+            const px = originX + pointR * scale;
+            const py = originY - pointI * scale;
+
+            if (showVector) {
+                // Draw vector line from origin
+                ctx.strokeStyle = pointColor;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(originX, originY);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+
+                // Draw projection dashed lines to axes
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                
+                // To Real Axis
+                ctx.beginPath();
+                ctx.moveTo(px, py);
+                ctx.lineTo(px, originY);
+                ctx.stroke();
+
+                // To Imaginary Axis
+                ctx.beginPath();
+                ctx.moveTo(px, py);
+                ctx.lineTo(originX, py);
+                ctx.stroke();
+                ctx.setLineDash([]); // reset
+            }
+
+            // Draw Point (Afijo)
+            ctx.fillStyle = pointColor;
+            ctx.beginPath();
+            ctx.arc(px, py, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Label point
+            if (showVector) {
+                ctx.font = 'bold 12px Inter, sans-serif';
+                ctx.fillStyle = '#1e293b';
+                let labelX = px + 10;
+                let labelY = py - 15;
+                ctx.textAlign = 'left';
+                ctx.fillText(`z (${pointR}, ${pointI > 0 ? '+' + pointI : pointI}i)`, labelX, labelY);
+            }
+        }
+
+        function drawConstructPlane() {
+            setupCanvasSize('canvas-construct');
+            drawComplexPlane('canvas-construct', constructReal, constructImag, true, '#4f46e5');
+        }
+
+        // --- GUESS MODE LOGIC ---
+        function newGuessTarget() {
+            hasGuessedCorrectly = false;
+            // Generate random integer coordinates between -6 and 6 (excluding 0,0 for challenge)
+            do {
+                targetReal = Math.floor(Math.random() * 13) - 6;
+                targetImag = Math.floor(Math.random() * 13) - 6;
+            } while (targetReal === 0 && targetImag === 0);
+
+            document.getElementById('guess-real').value = '';
+            document.getElementById('guess-imag').value = '';
+            
+            const feedback = document.getElementById('feedback-box');
+            feedback.classList.add('hidden');
+
+            setupCanvasSize('canvas-guess');
+            drawGuessPlane();
+        }
+
+        function drawGuessPlane() {
+            setupCanvasSize('canvas-guess');
+            // In guess mode, we draw the point in red, but hide label until guessed correctly or revealed
+            drawComplexPlane('canvas-guess', targetReal, targetImag, hasGuessedCorrectly, '#ef4444');
+        }
+
+        function checkGuess() {
+            const rInput = parseFloat(document.getElementById('guess-real').value);
+            const iInput = parseFloat(document.getElementById('guess-imag').value);
+            const feedback = document.getElementById('feedback-box');
+
+            attempts++;
+            document.getElementById('attempts-val').innerText = attempts;
+
+            if (isNaN(rInput) || isNaN(iInput)) {
+                feedback.className = "p-4 rounded-xl border text-sm font-medium bg-amber-50 border-amber-200 text-amber-800";
+                feedback.innerText = "⚠️ Por favor, ingresa un número válido tanto para la parte real como para la imaginaria.";
+                feedback.classList.remove('hidden');
+                return;
+            }
+
+            if (rInput === targetReal && iInput === targetImag) {
+                if (!hasGuessedCorrectly) {
+                    score++;
+                    document.getElementById('score-val').innerText = score;
+                    hasGuessedCorrectly = true;
+                }
+                feedback.className = "p-4 rounded-xl border text-sm font-medium bg-emerald-50 border-emerald-200 text-emerald-800";
+                feedback.innerHTML = `🎉 <strong>¡Correcto!</strong> El Punto corresponde exactamente a z = ${targetReal} ${targetImag >= 0 ? '+' : ''} ${targetImag}i.`;
+                drawGuessPlane(); // Redraw with vector and label
+            } else {
+                feedback.className = "p-4 rounded-xl border text-sm font-medium bg-rose-50 border-rose-200 text-rose-800";
+                feedback.innerHTML = `❌ <strong>Incorrecto.</strong> Inténtalo nuevamente o revisa la posición del punto rojo en los ejes.`;
+            }
+            feedback.classList.remove('hidden');
+        }
+
+        // Initialize on window load
+        window.onload = function() {
+            initConstructMode();
+            window.addEventListener('resize', () => {
+                if (!document.getElementById('section-construct').classList.contains('hidden')) {
+                    drawConstructPlane();
+                } else {
+                    drawGuessPlane();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
